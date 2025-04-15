@@ -1,6 +1,3 @@
-### node_helper.js
-
-```javascript
 /* Magic Mirror
  * Node Helper: MMM-ImageInfo
  * 
