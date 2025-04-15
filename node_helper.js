@@ -1,7 +1,7 @@
 /* Magic Mirror
  * Node Helper: MMM-ImageInfo
  * 
- * By Your Name
+ * By TypicalFunktion
  * MIT Licensed.
  */
 
