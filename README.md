@@ -1,13 +1,14 @@
 # MMM-ImageInfo
 
-A MagicMirror² module that displays information about the current background image from the MMM-Wallpaper module, with a focus on showing the original creation date of photographs.
+A MagicMirror² module that displays information about the current background image from the MMM-Wallpaper module, with a focus on showing the original creation date and location of photographs.
 
 ![MMM-ImageInfo Example](https://example.com/mmm-imageinfo-screenshot.jpg)
 
 ## Features
 
 - Shows the filename of the current background image
-- Displays the original creation date of the image (extracted from EXIF data when available)
+- Displays the original creation date of the image
+- Shows location information (city, state) if available in image metadata
 - Updates automatically when the wallpaper changes
 - Configurable display options (position, formatting, etc.)
 - Works seamlessly with MMM-Wallpaper module
@@ -47,16 +48,18 @@ A MagicMirror² module that displays information about the current background im
 
 ## Configuration Options
 
-| Option              | Description                                          | Default Value               |
-|---------------------|------------------------------------------------------|----------------------------|
-| `updateInterval`    | How often to check for image changes (milliseconds)  | `5000` (5 seconds)         |
-| `position`          | Where to display the module                          | `'bottom_right'`           |
-| `headerText`        | Header text to display above image info              | `''` (no header)           |
-| `showFileName`      | Whether to show the image filename                   | `true`                     |
-| `showCreationDate`  | Whether to show the image creation date              | `true`                     |
-| `dateFormat`        | Format for displaying the date (Moment.js format)    | `'MMMM D, YYYY'`           |
-| `textClass`         | CSS class for styling the text                       | `'small'`                  |
-| `wallpaperSelector` | CSS selector for finding the wallpaper image         | `'.MMM-Wallpaper img'`     |
+| Option              | Description                                               | Default Value                    |
+|---------------------|-----------------------------------------------------------|----------------------------------|
+| `updateInterval`    | How often to check for image changes (milliseconds)       | `5000` (5 seconds)               |
+| `position`          | Where to display the module                               | `'bottom_right'`                 |
+| `headerText`        | Header text to display above image info                   | `''` (no header)                 |
+| `showFileName`      | Whether to show the image filename                        | `true`                           |
+| `showCreationDate`  | Whether to show the image creation date                   | `true`                           |
+| `showLocation`      | Whether to show the location if available                 | `true`                           |
+| `dateFormat`        | Format for displaying the date (Moment.js format)         | `'MMMM D, YYYY'`                 |
+| `locationDateFormat`| Format template for location and date                     | `'[{location} - ]{date}'`        |
+| `textClass`         | CSS class for styling the text                            | `'small'`                        |
+| `wallpaperSelector` | CSS selector for finding the wallpaper image              | `'.MMM-Wallpaper img'`           |
 
 ### Example Configuration
 
@@ -68,13 +71,26 @@ A MagicMirror² module that displays information about the current background im
         updateInterval: 5000,
         showFileName: true,
         showCreationDate: true,
+        showLocation: true,
         dateFormat: "MMMM D, YYYY",
+        locationDateFormat: "[{location} - ]{date}", // Location followed by date
         textClass: "small",
-        headerText: "Photo Date",
+        headerText: "Photo Info",
         wallpaperSelector: ".MMM-Wallpaper img",
     }
 },
 ```
+
+## Location Format
+
+When location data is available in the image's metadata (most commonly from smartphone photos or GPS-enabled cameras), it will be displayed in this format:
+
+- If both city and state are available: `City, State - Date`
+- If only city is available: `City - Date`
+- If only state is available: `State - Date`
+- If no location data: Just the date is shown
+
+You can customize this format using the `locationDateFormat` setting. The template uses `{location}` and `{date}` placeholders.
 
 ## Dependencies
 
@@ -83,7 +99,7 @@ This module uses the following dependencies (automatically installed with `npm i
 - **exif-parser**: For reading EXIF metadata from image files
 - **moment.js**: For date formatting (already included with MagicMirror)
 
-Additionally, the module can use **ExifTool** if available on your system, which provides better metadata extraction. While optional, it's recommended for optimal results.
+Additionally, the module can use **ExifTool** if available on your system, which provides better metadata extraction (including location data). While optional, it's recommended for optimal results.
 
 ### Installing ExifTool (Optional but Recommended)
 
@@ -114,10 +130,10 @@ MMM-ImageInfo monitors your Magic Mirror DOM for changes to the background image
 
 1. It extracts the filename from the image source
 2. Constructs the likely local file path based on your MMM-Wallpaper configuration
-3. Uses several methods to extract the creation date:
-   - ExifTool (if available) for the most accurate metadata
+3. Uses several methods to extract the creation date and location:
+   - ExifTool (if available) for the most accurate metadata including location
    - The integrated exif-parser for basic EXIF data extraction
-   - File system stats as a last resort
+   - File system stats as a last resort for dates
 4. Displays the information according to your configuration settings
 
 ## Customization
@@ -129,12 +145,14 @@ You can customize the appearance by modifying the `MMM-ImageInfo.css` file in th
 - Requires MagicMirror² v2.0.0 or later
 - Designed to work with the MMM-Wallpaper module
 - Works best with image files that contain EXIF metadata
+- Location data requires images with embedded GPS or location tags (common in smartphone photos)
 
 ## Troubleshooting
 
+- **No location data appears**: Many images don't have location metadata. This is especially true for photos from digital cameras without GPS, stock photos, or images that have had metadata stripped.
 - **No creation date appears**: Some images may not have creation date metadata. The module will display only the filename in this case.
 - **Module shows "Waiting for image data"**: The module might not have detected the wallpaper element yet. Ensure your MMM-Wallpaper module is working correctly.
-- **Incorrect dates**: For the most accurate dates, install ExifTool as described above.
+- **Incorrect dates or locations**: For the most accurate metadata, install ExifTool as described above.
 - **Installation fails**: Make sure you have Node.js and npm properly installed on your system.
 
 ## Updating the Module
