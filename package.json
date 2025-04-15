@@ -12,9 +12,11 @@
     "wallpaper",
     "image",
     "metadata",
-    "exif"
+    "exif",
+    "photo",
+    "location"
   ],
-  "author": "TypicalFunktion",
+  "author": "MagicMirror Community",
   "license": "MIT",
   "dependencies": {
     "exif-parser": "^0.1.12",
