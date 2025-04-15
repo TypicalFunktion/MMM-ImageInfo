@@ -4,7 +4,8 @@
     text-align: right;
     padding: 5px 10px;
     border-radius: 10px;
-    max-width: 300px;
+    width: 95%;
+    padding-right:5px;
 }
 
 .image-filename {
