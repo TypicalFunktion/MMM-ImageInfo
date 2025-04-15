@@ -1,0 +1,23 @@
+{
+  "name": "mmm-imageinfo",
+  "version": "1.0.0",
+  "description": "A MagicMirror module that displays information about the current background image from MMM-Wallpaper",
+  "main": "MMM-ImageInfo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "node scripts/check-exiftool.js"
+  },
+  "keywords": [
+    "magicmirror",
+    "wallpaper",
+    "image",
+    "metadata",
+    "exif"
+  ],
+  "author": "TypicalFunktion",
+  "license": "MIT",
+  "dependencies": {
+    "exif-parser": "^0.1.12",
+    "moment": "^2.29.4"
+  }
+}
