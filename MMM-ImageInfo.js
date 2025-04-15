@@ -106,29 +106,3 @@ Module.register("MMM-ImageInfo", {
         }
     }
 });
-
-
-
-### MMM-ImageInfo.css
-
-```css
-/* MMM-ImageInfo CSS */
-
-.image-info {
-    text-align: left;
-    padding: 5px 10px;
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.4);
-    margin-bottom: 10px;
-    max-width: 300px;
-}
-
-.image-filename {
-    font-size: 0.9em;
-    margin-bottom: 3px;
-}
-
-.image-date {
-    font-size: 0.8em;
-    opacity: 0.8;
-}
