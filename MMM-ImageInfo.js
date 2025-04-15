@@ -8,14 +8,14 @@
 Module.register("MMM-ImageInfo", {
     // Default module config
     defaults: {
-        updateInterval: 10000, // Update every 10 seconds
+        updateInterval: 5000, // Update every 5 seconds
         position: "bottom_right",
         headerText: "", // No header by default
         showFileName: true,
         showCreationDate: true,
         dateFormat: "MMMM D, YYYY", // Format for displaying the date
         textClass: "small", // CSS class for styling the text
-        imagePath: null, // Will be populated by notification from MMM-Wallpaper
+        wallpaperSelector: ".MMM-Wallpaper img", // CSS selector for finding the wallpaper image
     },
 
     // Define required styles
@@ -34,9 +34,13 @@ Module.register("MMM-ImageInfo", {
         this.imageInfo = {
             path: "",
             filename: "",
+            src: "",
             creationDate: null
         };
         this.loaded = false;
+        this.lastCheckedSrc = "";
+        
+        // Start scanning for image changes
         this.scheduleUpdate();
     },
 
@@ -46,8 +50,8 @@ Module.register("MMM-ImageInfo", {
         wrapper.className = "image-info";
 
         if (!this.loaded) {
-            wrapper.innerHTML = "Loading...";
-            wrapper.className = "dimmed light small";
+            wrapper.innerHTML = "Getting Image Data";
+            wrapper.className = "highlight light xsmall";
             return wrapper;
         }
 
@@ -79,30 +83,67 @@ Module.register("MMM-ImageInfo", {
         return wrapper;
     },
 
+    // Check for image changes
+    checkForImageChanges: function() {
+        var imageElement = document.querySelector(this.config.wallpaperSelector);
+        
+        if (!imageElement) {
+            Log.info("MMM-ImageInfo: Wallpaper image not found yet");
+            return false;
+        }
+        
+        var currentSrc = imageElement.src;
+        
+        // If the source has changed
+        if (currentSrc && currentSrc !== this.lastCheckedSrc) {
+            Log.info("MMM-ImageInfo: Image source changed to", currentSrc);
+            this.lastCheckedSrc = currentSrc;
+            
+            // Extract filename from src
+            var filename = currentSrc.split('/').pop();
+            
+            // Clean up any URL parameters
+            if (filename.indexOf('?') !== -1) {
+                filename = filename.split('?')[0];
+            }
+            
+            // Update our info and request creation date
+            this.imageInfo.src = currentSrc;
+            this.imageInfo.filename = decodeURIComponent(filename);
+            
+            // Send to helper to get the file creation date
+            this.sendSocketNotification("GET_IMAGE_INFO", {
+                src: currentSrc,
+                filename: this.imageInfo.filename,
+                // Try to get the actual path (will only work for local files)
+                localPath: "/media/RYFUN/display/backgrounds/" + this.imageInfo.filename
+            });
+            
+            return true;
+        }
+        
+        return false;
+    },
+
     // Schedule next update
     scheduleUpdate: function() {
         var self = this;
         setInterval(function() {
-            self.updateDom();
+            self.checkForImageChanges();
         }, this.config.updateInterval);
-    },
-
-    // Override notification handler
-    notificationReceived: function(notification, payload, sender) {
-        if (notification === "WALLPAPER_CHANGED" && sender && sender.name === "MMM-Wallpaper") {
-            Log.info("MMM-ImageInfo: Received wallpaper change notification");
-            this.config.imagePath = payload.path;
-            this.sendSocketNotification("GET_IMAGE_INFO", { path: payload.path });
-        }
     },
 
     // Override socket notification handler
     socketNotificationReceived: function(notification, payload) {
         if (notification === "IMAGE_INFO_RESULT") {
-            Log.info("MMM-ImageInfo: Received image info");
-            this.imageInfo = payload;
-            this.loaded = true;
-            this.updateDom();
+            Log.info("MMM-ImageInfo: Received image info", payload);
+            
+            // Update with creation date
+            if (payload.filename === this.imageInfo.filename) {
+                this.imageInfo.creationDate = payload.creationDate;
+                this.loaded = true;
+                this.updateDom();
+            }
         }
     }
 });
