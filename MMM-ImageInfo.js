@@ -163,7 +163,7 @@ Module.register("MMM-ImageInfo", {
                 src: currentSrc,
                 filename: this.imageInfo.filename,
                 // Try to get the actual path (will only work for local files)
-                localPath: "/media/RYFUN/display/backgrounds/" + this.imageInfo.filename
+                localPath: "/home/RYFUN/Pictures/backgrounds/" + this.imageInfo.filename
             });
             
             return true;
