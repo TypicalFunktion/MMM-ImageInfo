@@ -93,7 +93,7 @@ Module.register("MMM-ImageInfo", {
 
         // Filename
         if (this.config.showFileName && this.imageInfo.filename) {
-            infoParts.push(this.imageInfo.filename);
+            infoParts.push('<span class="image-filename">' + this.imageInfo.filename + '</span>');
         }
 
         // Date
