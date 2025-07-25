@@ -72,58 +72,42 @@ Module.register("MMM-ImageInfo", {
         var infoContainer = document.createElement("div");
         infoContainer.className = this.config.textClass;
 
-        if (this.config.showFileName && this.imageInfo.filename) {
-            var filenameElem = document.createElement("div");
-            filenameElem.className = "image-filename";
-            filenameElem.innerHTML = this.imageInfo.filename;
-            infoContainer.appendChild(filenameElem);
+        // Build inline info string: location | filename | date
+        var infoParts = [];
+
+        // Location
+        var locationText = "";
+        if (this.config.showLocation && this.imageInfo.location.hasLocation) {
+            if (this.imageInfo.location.city && this.imageInfo.location.state) {
+                locationText = this.imageInfo.location.city + ", " + this.imageInfo.location.state;
+            } else if (this.imageInfo.location.city) {
+                locationText = this.imageInfo.location.city;
+            } else if (this.imageInfo.location.state) {
+                locationText = this.imageInfo.location.state;
+            }
+            if (this.imageInfo.location.country && !this.imageInfo.location.state) {
+                locationText += locationText ? ", " + this.imageInfo.location.country : this.imageInfo.location.country;
+            }
+            if (locationText) infoParts.push(locationText);
         }
 
-        // Format location and date if configured
-        if ((this.config.showCreationDate && this.imageInfo.creationDate) || 
-            (this.config.showLocation && this.imageInfo.location.hasLocation)) {
-            
-            var dateLocElem = document.createElement("div");
-            dateLocElem.className = "image-date-location";
-            
-            // Format the location string if we have location data
-            var locationText = "";
-            if (this.config.showLocation && this.imageInfo.location.hasLocation) {
-                // Format as City, State - or just City if no state
-                if (this.imageInfo.location.city && this.imageInfo.location.state) {
-                    locationText = this.imageInfo.location.city + ", " + this.imageInfo.location.state;
-                } else if (this.imageInfo.location.city) {
-                    locationText = this.imageInfo.location.city;
-                } else if (this.imageInfo.location.state) {
-                    locationText = this.imageInfo.location.state;
-                }
-                
-                // Add country if available and not already using state
-                if (this.imageInfo.location.country && !this.imageInfo.location.state) {
-                    locationText += locationText ? ", " + this.imageInfo.location.country : this.imageInfo.location.country;
-                }
-            }
-            
-            // Format the date if available
-            var dateText = "";
-            if (this.config.showCreationDate && this.imageInfo.creationDate) {
-                dateText = moment(this.imageInfo.creationDate).format(this.config.dateFormat);
-            }
-            
-            // Combine location and date according to the format
-            var displayText = this.config.locationDateFormat
-                .replace("{location}", locationText)
-                .replace("{date}", dateText);
-                
-            // Clean up any artifacts if location or date is missing
-            displayText = displayText
-                .replace(/\[\s*-\s*\]/g, "") // Remove empty brackets with dash
-                .replace(/\[\s*\]/g, "")     // Remove empty brackets
-                .replace(/\s+-\s+/g, "")     // Remove lone dashes
-                .trim();                     // Remove extra whitespace
-                
-            dateLocElem.innerHTML = displayText;
-            infoContainer.appendChild(dateLocElem);
+        // Filename
+        if (this.config.showFileName && this.imageInfo.filename) {
+            infoParts.push(this.imageInfo.filename);
+        }
+
+        // Date
+        if (this.config.showCreationDate && this.imageInfo.creationDate) {
+            var dateText = moment(this.imageInfo.creationDate).format(this.config.dateFormat);
+            infoParts.push(dateText);
+        }
+
+        // Only show if at least one part exists
+        if (infoParts.length > 0) {
+            var inlineElem = document.createElement("div");
+            inlineElem.className = "image-info-inline";
+            inlineElem.innerHTML = infoParts.join("  |  ");
+            infoContainer.appendChild(inlineElem);
         }
 
         wrapper.appendChild(infoContainer);
