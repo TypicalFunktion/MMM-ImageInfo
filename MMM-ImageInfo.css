@@ -9,8 +9,9 @@
 }
 
 .image-filename {
-    font-size: 0.9em;
+    font-size: 0.4em;
     margin-bottom: 3px;
+    color: #aaaaaa;
 }
 
 .image-date {
