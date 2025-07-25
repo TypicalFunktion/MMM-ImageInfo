@@ -106,7 +106,7 @@ Module.register("MMM-ImageInfo", {
         if (infoParts.length > 0) {
             var inlineElem = document.createElement("div");
             inlineElem.className = "image-info-inline";
-            inlineElem.innerHTML = infoParts.join("  |  ");
+            inlineElem.innerHTML = infoParts.join("  ");
             infoContainer.appendChild(inlineElem);
         }
 
