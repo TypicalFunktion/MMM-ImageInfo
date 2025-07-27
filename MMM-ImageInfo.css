@@ -1,19 +1,28 @@
 /* MMM-ImageInfo CSS */
 
 .image-info {
-    text-align: right;
+    text-align: center;
     padding: 5px 10px;
     border-radius: 10px;
-    width: 95%;
-    padding-right:5px;
+    width: 98%;
+    margin: 0 auto;
+}
+
+.image-info-inline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 .image-filename {
-    font-size: 10px;
+    font-size: 0.4em;
     margin-bottom: 3px;
     color: #aaaaaa;
+    text-align: left;
 }
 
 .image-date {
     font-size: 0.8em;
+    text-align: right;
 }

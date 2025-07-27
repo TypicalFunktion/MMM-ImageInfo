@@ -13,9 +13,8 @@ Module.register("MMM-ImageInfo", {
         headerText: "", // No header by default
         showFileName: true,
         showCreationDate: true,
-        showLocation: true, // New option to show location
+        showLocation: false, // Disabled location display
         dateFormat: "MMMM D, YYYY", // Format for displaying the date
-        locationDateFormat: "[{location} - ]{date}", // Format for combined location and date
         textClass: "small", // CSS class for styling the text
         wallpaperSelector: ".MMM-Wallpaper img", // CSS selector for finding the wallpaper image
     },
@@ -72,41 +71,28 @@ Module.register("MMM-ImageInfo", {
         var infoContainer = document.createElement("div");
         infoContainer.className = this.config.textClass;
 
-        // Build inline info string: location | filename | date
-        var infoParts = [];
+        // Create inline container for filename and date
+        var inlineElem = document.createElement("div");
+        inlineElem.className = "image-info-inline";
 
-        // Location
-        var locationText = "";
-        if (this.config.showLocation && this.imageInfo.location.hasLocation) {
-            if (this.imageInfo.location.city && this.imageInfo.location.state) {
-                locationText = this.imageInfo.location.city + ", " + this.imageInfo.location.state;
-            } else if (this.imageInfo.location.city) {
-                locationText = this.imageInfo.location.city;
-            } else if (this.imageInfo.location.state) {
-                locationText = this.imageInfo.location.state;
-            }
-            if (this.imageInfo.location.country && !this.imageInfo.location.state) {
-                locationText += locationText ? ", " + this.imageInfo.location.country : this.imageInfo.location.country;
-            }
-            if (locationText) infoParts.push(locationText);
-        }
-
-        // Filename
+        // Filename on the left
         if (this.config.showFileName && this.imageInfo.filename) {
-            infoParts.push('<span class="image-filename">' + this.imageInfo.filename + '</span>');
+            var filenameSpan = document.createElement("span");
+            filenameSpan.className = "image-filename";
+            filenameSpan.innerHTML = this.imageInfo.filename;
+            inlineElem.appendChild(filenameSpan);
         }
 
-        // Date
+        // Date on the right
         if (this.config.showCreationDate && this.imageInfo.creationDate) {
-            var dateText = moment(this.imageInfo.creationDate).format(this.config.dateFormat);
-            infoParts.push(dateText);
+            var dateSpan = document.createElement("span");
+            dateSpan.className = "image-date";
+            dateSpan.innerHTML = moment(this.imageInfo.creationDate).format(this.config.dateFormat);
+            inlineElem.appendChild(dateSpan);
         }
 
         // Only show if at least one part exists
-        if (infoParts.length > 0) {
-            var inlineElem = document.createElement("div");
-            inlineElem.className = "image-info-inline";
-            inlineElem.innerHTML = infoParts.join("  ");
+        if (inlineElem.children.length > 0) {
             infoContainer.appendChild(inlineElem);
         }
 
